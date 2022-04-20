@@ -18,13 +18,13 @@ export class UserEntity extends BaseEntity {
   id: number;
 
   @Column()
-  readonly firstName: string;
+  firstName: string;
 
   @Column()
-  readonly lastName: string;
+  lastName: string;
 
   @Column()
-  readonly email: string;
+  email: string;
 
   @Column({ nullable: true })
   private password: string;

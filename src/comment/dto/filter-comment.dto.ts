@@ -1,6 +1,6 @@
 import { FilterDto } from '../../shared/dtos/filter.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsNumber, IsOptional, IsString } from "class-validator";
 
 export class FilterCommentDto extends FilterDto {
   @ApiProperty()
@@ -10,6 +10,6 @@ export class FilterCommentDto extends FilterDto {
 
   @ApiProperty()
   @IsNumber()
-  @IsNotEmpty()
-  userId: number;
+  @IsOptional()
+  postId: number;
 }

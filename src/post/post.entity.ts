@@ -30,7 +30,7 @@ export class PostEntity extends BaseEntity {
   noComment: boolean;
 
   @ApiProperty()
-  @OneToMany(() => CommentEntity, (comment) => comment.post)
+  @OneToMany(() => CommentEntity, (comment) => comment.post, { nullable: true })
   comments: CommentEntity[];
 
   @ApiProperty()
@@ -38,6 +38,6 @@ export class PostEntity extends BaseEntity {
   user: UserEntity;
 
   @ApiProperty()
-  @OneToMany(() => VoteEntity, (vote) => vote.post)
+  @OneToMany(() => VoteEntity, (vote) => vote.post, { nullable: true })
   votes: VoteEntity[];
 }

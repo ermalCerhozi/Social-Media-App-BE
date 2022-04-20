@@ -4,7 +4,7 @@ import { PaginateModel } from "../shared/models/paginate.model";
 
 export interface CommentFilter extends PaginateModel {
   comment?: string;
-  userId: number;
+  postId: number;
 }
 
 @EntityRepository(CommentEntity)
@@ -25,12 +25,13 @@ export class CommentRepository extends Repository<CommentEntity> {
   async findAndCount(options: CommentFilter): Promise<[CommentEntity[], number]> {
     const qb: SelectQueryBuilder<CommentEntity> = await this.getCommentAndSubEntities();
 
-    const { skip, take, comment } = options;
+    const { skip, take, comment, postId } = options;
     qb.skip(skip);
     qb.take(take);
 
     if (comment) {
       qb.where({
+        postId,
         comment: Like(`%${comment}%`)
       });
     }

@@ -12,5 +12,46 @@ GET http://localhost:3000/api/post?description=z
 Accept: application/json
 
 ### Get post by ID
-GET http://localhost:3000/api/post/1
+GET http://localhost:3000/api/post/3
 Accept: application/json
+
+### Create post
+POST http://localhost:3000/api/post
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZmlyc3ROYW1lIjoiSGVnaSIsImxhc3ROYW1lIjoiR2pva2EiLCJlbWFpbCI6Imhnam9rYTE2QGdtYWlsLmNvbSIsInJvbGUiOjcsImlhdCI6MTY1MDQ2MzI0OSwiZXhwIjoxNjUwNDY2ODQ5fQ.zePgn1LseKqcCDnNG4iZj1ULxWIe3sBSKiHZF8DNpVjdTFxnPiBPeql1yhOb_h7TGeXNqdZfalBLU2J0hIxUkQ
+
+{
+  "imageUrl": "https://antitrustlair.files.wordpress.com/2013/02/post_danmark.jpg",
+  "description": "My Third Post",
+  "noComment": true
+}
+
+### Edit post
+PUT http://localhost:3000/api/post/3
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZmlyc3ROYW1lIjoiSGVnaSIsImxhc3ROYW1lIjoiR2pva2EiLCJlbWFpbCI6Imhnam9rYTE2QGdtYWlsLmNvbSIsInJvbGUiOjcsImlhdCI6MTY1MDQ2MzI0OSwiZXhwIjoxNjUwNDY2ODQ5fQ.zePgn1LseKqcCDnNG4iZj1ULxWIe3sBSKiHZF8DNpVjdTFxnPiBPeql1yhOb_h7TGeXNqdZfalBLU2J0hIxUkQ
+
+{
+  "description": "My Third Post (edited)",
+  "noComment": false,
+  "id": 3
+}
+
+### Delete post
+DELETE http://localhost:3000/api/post/5
+Accept: application/json
+Authorization: eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZmlyc3ROYW1lIjoiSGVnaSIsImxhc3ROYW1lIjoiR2pva2EiLCJlbWFpbCI6Imhnam9rYTE2QGdtYWlsLmNvbSIsInJvbGUiOjcsImlhdCI6MTY1MDQ2MzI0OSwiZXhwIjoxNjUwNDY2ODQ5fQ.zePgn1LseKqcCDnNG4iZj1ULxWIe3sBSKiHZF8DNpVjdTFxnPiBPeql1yhOb_h7TGeXNqdZfalBLU2J0hIxUkQ
+
+
+### Get list of comments of the post
+GET http://localhost:3000/api/post/1/comment
+Accept: application/json
+
+### Add new comment to post
+POST http://localhost:3000/api/post/6/comment
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZmlyc3ROYW1lIjoiSGVnaSIsImxhc3ROYW1lIjoiR2pva2EiLCJlbWFpbCI6Imhnam9rYTE2QGdtYWlsLmNvbSIsInJvbGUiOjcsImlhdCI6MTY1MDQ2NzA5MiwiZXhwIjoxNjU0MDY3MDkyfQ.871eGWpfnijQrbvhjLClGPK04D3wQQVk3wOa6x0RuF-2RAPA-dXvA3yxRn7bgPAstYvdXZ2P9ZI9O_77i_csvg
+
+{
+  "comment": "sa bukur"
+}

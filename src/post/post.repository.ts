@@ -26,8 +26,8 @@ export class PostRepository extends Repository<PostEntity> {
         'commentUser.lastName',
         'commentUser.email'
       ])
-      .innerJoin('post.user', 'user')
-      .innerJoin('post.comments', 'comments')
+      .leftJoin('post.user', 'user')
+      .leftJoin('post.comments', 'comments')
       .leftJoin('comments.user', 'commentUser')
   }
 

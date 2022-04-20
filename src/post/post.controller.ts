@@ -3,7 +3,8 @@ import {
   ConflictException,
   Controller,
   Delete,
-  Get, Headers,
+  Get,
+  Headers,
   Param,
   ParseIntPipe,
   Post,
@@ -23,7 +24,12 @@ import { RoleGuard } from "../shared/guards/role.guard";
 import { UserRole } from "../shared/enums/user-role.enum";
 import { UserDto } from "../user/dto/user.dto";
 import { LoggedUser } from "../user/logged-users";
+import { FilterCommentDto } from "../comment/dto/filter-comment.dto";
+import { CommentEntity } from "../comment/comment.entity";
+import { CreateCommentDto } from "../comment/dto/create-comment.dto";
+import { ApiTags } from "@nestjs/swagger";
 
+@ApiTags('Post')
 @Controller('post')
 export class PostController {
   constructor(
@@ -65,8 +71,7 @@ export class PostController {
   ): Promise<ResponseDto<PostEntity>> {
     const user: UserDto = LoggedUser.getUser(token);
 
-    const { id } = user;
-    const newPost: PostEntity = await this.postService.create(createPostDto, id);
+    const newPost: PostEntity = await this.postService.create(createPostDto, user);
 
     return {
       data: newPost,
@@ -85,8 +90,7 @@ export class PostController {
 
     const user: UserDto = LoggedUser.getUser(token);
 
-    const { id: userId } = user;
-    const post: PostEntity = await this.postService.update(id, editPostDto, userId);
+    const post: PostEntity = await this.postService.update(id, editPostDto, user.id);
 
     return {
       data: post,
@@ -95,19 +99,57 @@ export class PostController {
   }
 
   @Delete(':id')
+  @UseGuards(new RoleGuard(UserRole.USER))
   async remove(
+    @Headers('authorization') token: string,
     @Param('id', ParseIntPipe) id: number
-  ): Promise<void> {}
+  ): Promise<ResponseDto<PostEntity>> {
+    const user: UserDto = LoggedUser.getUser(token);
+
+    const post: PostEntity = await this.postService.delete(id, user.id);
+
+    return {
+      data: post,
+      result: null
+    };
+  }
 
   @Get(':id/comment')
-  async getCommentList(@Param('id', ParseIntPipe) id: number): Promise<void> {}
+  async getCommentList(
+    @Param('id', ParseIntPipe) id: number,
+    @Query() filterCommentDto: Omit<FilterCommentDto, 'postId'>
+  ): Promise<ResponseDto<PageOfDto<CommentEntity>>> {
+    const post: PostEntity = await this.postService.get(id);
+
+    return await this.commentController.getList({
+      ...filterCommentDto,
+      postId: post.id
+    });
+  }
 
   @Post(':id/comment')
-  async addComment(@Param('id', ParseIntPipe) id: number): Promise<void> {}
+  @UseGuards(new RoleGuard(UserRole.USER))
+  async addComment(
+    @Headers('authorization') token: string,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() createCommentDto: Omit<CreateCommentDto, 'postId'>
+  ): Promise<ResponseDto<CommentEntity>> {
+    const post: PostEntity = await this.postService.get(id);
+
+    return await this.commentController.add(token, {
+      ...createCommentDto,
+      postId: post.id
+    });
+  }
 
   @Delete(':id/comment/:commentId')
+  @UseGuards(new RoleGuard(UserRole.USER))
   async removeComment(
+    @Headers('authorization') token: string,
     @Param('id', ParseIntPipe) id: number,
     @Param('commentId', ParseIntPipe) commentId: number,
-  ): Promise<void> {}
+  ): Promise<ResponseDto<CommentEntity>> {
+    await this.postService.get(id);
+    return await this.commentController.remove(token, commentId);
+  }
 }

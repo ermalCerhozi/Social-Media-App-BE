@@ -5,7 +5,11 @@ import { environment } from '../environment/environment';
 import * as jwt from 'jsonwebtoken';
 
 export class LoggedUser {
-  static EXPIRATION_TIME: number = 1 * 60 * 60; // 1h
+  private static _EXPIRATION_TIME: number = 1 * 60 * 60 * 1000; // 1h
+  static set EXPIRATION_TIME(seconds: number) {
+    this._EXPIRATION_TIME = seconds * 1000;
+  }
+
   private static INVALID_TOKENS: string[] = [];
 
   static setUser(user: UserDto): UserDto {
@@ -20,7 +24,7 @@ export class LoggedUser {
 
     const token: string = jwt.sign(payload, environment.jwt.secret, {
       algorithm: environment.jwt.algorithm,
-      expiresIn: LoggedUser.EXPIRATION_TIME,
+      expiresIn: LoggedUser._EXPIRATION_TIME,
     });
 
     return {

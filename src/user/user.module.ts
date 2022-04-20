@@ -13,6 +13,6 @@ import { LoggedUser } from './logged-users';
 })
 export class UserModule {
   constructor() {
-    LoggedUser.EXPIRATION_TIME = 5 * 60;
+    LoggedUser.EXPIRATION_TIME = 1 * 60 * 60;
   }
 }

@@ -7,7 +7,7 @@ import { SignUpDto } from './dto/sign-up.dto';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { IdTokenDto } from './dto/id-token.dto';
 
-@ApiTags('Authentication')
+@ApiTags('Auth')
 @Controller('auth')
 export class UserController {
   constructor(private userService: UserService) {}

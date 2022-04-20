@@ -1,6 +1,8 @@
 import { Controller, Get, HttpCode, Injectable, Post } from '@nestjs/common';
+import { ApiTags } from "@nestjs/swagger";
 
 @Injectable()
+@ApiTags('Vote')
 @Controller('vote')
 export class VoteController {
   @Get()

@@ -21,8 +21,10 @@ import { RoleGuard } from "../shared/guards/role.guard";
 import { UserRole } from "../shared/enums/user-role.enum";
 import { UserDto } from "../user/dto/user.dto";
 import { LoggedUser } from "../user/logged-users";
+import { ApiTags } from "@nestjs/swagger";
 
 @Injectable()
+@ApiTags('Comment')
 @Controller('comment')
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
@@ -48,9 +50,8 @@ export class CommentController {
   ): Promise<ResponseDto<CommentEntity>> {
     const user: UserDto = LoggedUser.getUser(token);
 
-    const { id } = user;
     const newComment: CommentEntity = await this.commentService
-      .create(createCommentDto,id);
+      .create(createCommentDto, user);
 
     return {
       data: newComment,
@@ -59,10 +60,14 @@ export class CommentController {
   }
 
   @Delete(':id')
+  @UseGuards(new RoleGuard(UserRole.USER))
   async remove(
+    @Headers('authorization') token: string,
     @Param('id', ParseIntPipe) id: number
   ): Promise<ResponseDto<CommentEntity>> {
-    const comment: CommentEntity = await this.commentService.delete(id);
+    const user: UserDto = LoggedUser.getUser(token);
+
+    const comment: CommentEntity = await this.commentService.delete(id, user.id);
 
     return {
       data: comment,
