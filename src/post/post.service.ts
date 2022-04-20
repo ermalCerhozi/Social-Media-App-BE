@@ -2,11 +2,11 @@ import { Injectable, InternalServerErrorException, NotFoundException } from "@ne
 import { InjectRepository } from '@nestjs/typeorm';
 import { PostFilter, PostRepository } from "./post.repository";
 import { FilterPostDto } from './dto/filter-post.dto';
-import { environment } from '../environment/environment';
 import { PageOfDto } from '../shared/dtos/page-of.dto';
 import { PostEntity } from './post.entity';
 import { CreatePostDto } from "./dto/create-post.dto";
 import { EditPostDto } from "./dto/edit-post.dto";
+import { extractPagination } from "../shared/utilities/extract-pagination";
 
 @Injectable()
 export class PostService {
@@ -16,11 +16,7 @@ export class PostService {
   ) {}
 
   async getList(filterPostDto?: FilterPostDto): Promise<PageOfDto<PostEntity>> {
-    const pageNo: number = filterPostDto?.pageNo || 1;
-    const pageSize: number = filterPostDto?.pageSize || environment.pageSize;
-
-    const skip: number = (pageNo - 1) * pageSize;
-    const take: number = pageSize;
+    const { skip, take, pageNo, pageSize } = extractPagination(filterPostDto);
 
     let postList: PostEntity[];
     let totalElements = 0;
@@ -65,7 +61,7 @@ export class PostService {
     return post;
   }
 
-  async create(createPostDto: CreatePostDto): Promise<PostEntity> {
+  async create(createPostDto: CreatePostDto, userId: number): Promise<PostEntity> {
     const newPost: PostEntity = new PostEntity();
     const { imageUrl, description, noComment } = createPostDto;
 
@@ -74,7 +70,7 @@ export class PostService {
     newPost.noComment = noComment || false;
 
     try {
-      await newPost.save();
+      await newPost.save({ data: { userId } });
     } catch (ex) {
       throw new InternalServerErrorException(ex);
     }
@@ -82,7 +78,7 @@ export class PostService {
     return newPost;
   }
 
-  async update(id: number, editPostDto: EditPostDto): Promise<PostEntity> {
+  async update(id: number, editPostDto: EditPostDto, userId: number): Promise<PostEntity> {
     const post: PostEntity = await this.get(id);
 
     const { description, noComment } = editPostDto;
@@ -90,7 +86,7 @@ export class PostService {
     if (noComment !== undefined) post.noComment = noComment;
 
     try {
-      await post.save();
+      await post.save({ data: { userId } });
     } catch (ex) {
       throw new InternalServerErrorException(ex);
     }

@@ -3,7 +3,7 @@ import {
   ConflictException,
   Controller,
   Delete,
-  Get,
+  Get, Headers,
   Param,
   ParseIntPipe,
   Post,
@@ -21,6 +21,8 @@ import { CreatePostDto } from "./dto/create-post.dto";
 import { EditPostDto } from "./dto/edit-post.dto";
 import { RoleGuard } from "../shared/guards/role.guard";
 import { UserRole } from "../shared/enums/user-role.enum";
+import { UserDto } from "../user/dto/user.dto";
+import { LoggedUser } from "../user/logged-users";
 
 @Controller('post')
 export class PostController {
@@ -58,9 +60,13 @@ export class PostController {
   @Post()
   @UseGuards(new RoleGuard(UserRole.USER))
   async add(
+    @Headers('authorization') token: string,
     @Body() createPostDto: CreatePostDto
   ): Promise<ResponseDto<PostEntity>> {
-    const newPost: PostEntity = await this.postService.create(createPostDto);
+    const user: UserDto = LoggedUser.getUser(token);
+
+    const { id } = user;
+    const newPost: PostEntity = await this.postService.create(createPostDto, id);
 
     return {
       data: newPost,
@@ -70,22 +76,28 @@ export class PostController {
 
   @Put(':id')
   @UseGuards(new RoleGuard(UserRole.USER))
-  async update(@Param('id', ParseIntPipe) id: number): Promise<void> {}
-
-  @Delete(':id')
-  async remove(
+  async update(
+    @Headers('authorization') token: string,
     @Param('id', ParseIntPipe) id: number,
     @Body() editPostDto: EditPostDto
   ): Promise<ResponseDto<PostEntity>> {
     if (id !== editPostDto.id) throw new ConflictException();
 
-    const post: PostEntity = await this.postService.update(id, editPostDto);
+    const user: UserDto = LoggedUser.getUser(token);
+
+    const { id: userId } = user;
+    const post: PostEntity = await this.postService.update(id, editPostDto, userId);
 
     return {
       data: post,
       result: null
     }
   }
+
+  @Delete(':id')
+  async remove(
+    @Param('id', ParseIntPipe) id: number
+  ): Promise<void> {}
 
   @Get(':id/comment')
   async getCommentList(@Param('id', ParseIntPipe) id: number): Promise<void> {}
