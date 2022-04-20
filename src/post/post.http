@@ -1,0 +1,16 @@
+### Get all posts
+GET http://localhost:3000/api/post
+Accept: application/json
+
+<> 2022-04-20T100501.200.json
+<> 2022-04-20T100002.200.json
+<> 2022-04-20T095517.200.json
+<> 2022-04-20T095006.200.json
+
+### Get all posts with params
+GET http://localhost:3000/api/post?description=z
+Accept: application/json
+
+### Get post by ID
+GET http://localhost:3000/api/post/1
+Accept: application/json

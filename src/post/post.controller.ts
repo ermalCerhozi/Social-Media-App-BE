@@ -1,4 +1,6 @@
 import {
+  Body,
+  ConflictException,
   Controller,
   Delete,
   Get,
@@ -7,13 +9,18 @@ import {
   Post,
   Put,
   Query,
-} from '@nestjs/common';
-import { CommentController } from '../comment/comment.controller';
-import { FilterPostDto } from './dto/filter-post.dto';
-import { PostService } from './post.service';
+  UseGuards
+} from "@nestjs/common";
+import { CommentController } from "../comment/comment.controller";
+import { FilterPostDto } from "./dto/filter-post.dto";
+import { PostService } from "./post.service";
 import { ResponseDto } from "../shared/dtos/response.dto";
 import { PageOfDto } from "../shared/dtos/page-of.dto";
 import { PostEntity } from "./post.entity";
+import { CreatePostDto } from "./dto/create-post.dto";
+import { EditPostDto } from "./dto/edit-post.dto";
+import { RoleGuard } from "../shared/guards/role.guard";
+import { UserRole } from "../shared/enums/user-role.enum";
 
 @Controller('post')
 export class PostController {
@@ -23,7 +30,6 @@ export class PostController {
   ) {}
 
   @Get()
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   async getList(
     @Query() filterPostDto: FilterPostDto,
   ): Promise<ResponseDto<PageOfDto<PostEntity>>> {
@@ -38,35 +44,58 @@ export class PostController {
   }
 
   @Get(':id')
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars,@typescript-eslint/no-empty-function
-  async get(@Param('id', ParseIntPipe) id: number): Promise<void> {}
+  async get(
+    @Param('id', ParseIntPipe) id: number
+  ): Promise<ResponseDto<PostEntity>> {
+    const post: PostEntity = await this.postService.get(id);
+
+    return {
+      data: post,
+      result: null
+    };
+  }
 
   @Post()
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  async add(): Promise<void> {}
+  @UseGuards(new RoleGuard(UserRole.USER))
+  async add(
+    @Body() createPostDto: CreatePostDto
+  ): Promise<ResponseDto<PostEntity>> {
+    const newPost: PostEntity = await this.postService.create(createPostDto);
+
+    return {
+      data: newPost,
+      result: null
+    };
+  }
 
   @Put(':id')
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars,@typescript-eslint/no-empty-function
+  @UseGuards(new RoleGuard(UserRole.USER))
   async update(@Param('id', ParseIntPipe) id: number): Promise<void> {}
 
   @Delete(':id')
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars,@typescript-eslint/no-empty-function
-  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {}
+  async remove(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() editPostDto: EditPostDto
+  ): Promise<ResponseDto<PostEntity>> {
+    if (id !== editPostDto.id) throw new ConflictException();
+
+    const post: PostEntity = await this.postService.update(id, editPostDto);
+
+    return {
+      data: post,
+      result: null
+    }
+  }
 
   @Get(':id/comment')
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars,@typescript-eslint/no-empty-function
   async getCommentList(@Param('id', ParseIntPipe) id: number): Promise<void> {}
 
   @Post(':id/comment')
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars,@typescript-eslint/no-empty-function
   async addComment(@Param('id', ParseIntPipe) id: number): Promise<void> {}
 
   @Delete(':id/comment/:commentId')
   async removeComment(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     @Param('id', ParseIntPipe) id: number,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     @Param('commentId', ParseIntPipe) commentId: number,
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
   ): Promise<void> {}
 }

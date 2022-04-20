@@ -1,0 +1,31 @@
+### Sign In
+POST http://localhost:3000/api/auth/signIn
+Content-Type: application/json
+
+{
+  "email": "hgjoka16@gmail.com",
+  "password": "Ikub1234"
+}
+
+<> 2022-04-18T012019.201.json
+<> 2022-04-18T011916.201.json
+<> 2022-04-18T011540.404.json
+<> 2022-04-18T011514.404.json
+<> 2022-04-18T011437.404.json
+<> 2022-04-18T011333.404.json
+<> 2022-04-18T010014.404.json
+<> 2022-04-18T005835.404.json
+
+### Sign Up
+POST http://localhost:3000/api/auth/signUp
+Content-Type: application/json
+
+{
+  "firstName": "Hegi",
+  "lastName": "Gjoka",
+  "email": "hgjoka16@gmail.com",
+  "password": "Ikub1234"
+}
+
+<> 2022-04-18T011905.201.json
+<> 2022-04-18T005911.201.json
