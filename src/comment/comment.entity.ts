@@ -19,11 +19,11 @@ export class CommentEntity extends BaseEntity {
   @Column()
   comment: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: () => PostEntity })
   @ManyToOne(() => PostEntity, (post) => post.comments)
   post: PostEntity;
 
-  @ApiProperty()
+  @ApiProperty({ type: () => UserEntity })
   @ManyToOne(() => UserEntity)
   user: UserEntity;
 }

@@ -21,14 +21,22 @@ export class PostRepository extends Repository<PostEntity> {
         'user.email',
         'comments.id',
         'comments.comment',
-        'commentUser.id',
-        'commentUser.firstName',
-        'commentUser.lastName',
-        'commentUser.email'
+        'userComment.id',
+        'userComment.firstName',
+        'userComment.lastName',
+        'userComment.email',
+        'vote.id',
+        'vote.vote',
+        'userVote.id',
+        'userVote.firstName',
+        'userVote.lastName',
+        'userVote.email',
       ])
       .leftJoin('post.user', 'user')
       .leftJoin('post.comments', 'comments')
-      .leftJoin('comments.user', 'commentUser')
+      .leftJoin('comments.user', 'userComment')
+      .leftJoin('post.votes', 'vote')
+      .leftJoin('vote.user', 'userVote')
   }
 
   // @ts-ignore

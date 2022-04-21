@@ -4,9 +4,9 @@ import {
   Controller,
   Delete,
   Get,
-  Headers,
+  Headers, MethodNotAllowedException,
   Param,
-  ParseIntPipe,
+  ParseIntPipe, Patch,
   Post,
   Put,
   Query,
@@ -27,17 +27,25 @@ import { LoggedUser } from "../user/logged-users";
 import { FilterCommentDto } from "../comment/dto/filter-comment.dto";
 import { CommentEntity } from "../comment/comment.entity";
 import { CreateCommentDto } from "../comment/dto/create-comment.dto";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiExtraModels, ApiTags, OmitType } from "@nestjs/swagger";
+import { ApiCustomResponse } from "../shared/decorators/api-custom-response";
+import { ApiCustomPaginatedResponse } from "../shared/decorators/api-custom-paginated-response";
+import { VoteEntity } from "../vote/vote.entity";
+import { FilterVoteDto } from "../vote/dto/filter-vote.dto";
+import { VoteController } from "../vote/vote.controller";
 
 @ApiTags('Post')
+@ApiExtraModels(ResponseDto, PageOfDto, PostEntity, CommentEntity)
 @Controller('post')
 export class PostController {
   constructor(
     private readonly commentController: CommentController,
+    private readonly voteController: VoteController,
     private readonly postService: PostService,
   ) {}
 
   @Get()
+  @ApiCustomPaginatedResponse(PostEntity)
   async getList(
     @Query() filterPostDto: FilterPostDto,
   ): Promise<ResponseDto<PageOfDto<PostEntity>>> {
@@ -52,6 +60,7 @@ export class PostController {
   }
 
   @Get(':id')
+  @ApiCustomResponse(PostEntity)
   async get(
     @Param('id', ParseIntPipe) id: number
   ): Promise<ResponseDto<PostEntity>> {
@@ -65,6 +74,8 @@ export class PostController {
 
   @Post()
   @UseGuards(new RoleGuard(UserRole.USER))
+  @ApiBody({ type: CreatePostDto })
+  @ApiCustomResponse(PostEntity)
   async add(
     @Headers('authorization') token: string,
     @Body() createPostDto: CreatePostDto
@@ -81,6 +92,8 @@ export class PostController {
 
   @Put(':id')
   @UseGuards(new RoleGuard(UserRole.USER))
+  @ApiBody({ type: PostEntity })
+  @ApiCustomResponse(PostEntity)
   async update(
     @Headers('authorization') token: string,
     @Param('id', ParseIntPipe) id: number,
@@ -100,6 +113,7 @@ export class PostController {
 
   @Delete(':id')
   @UseGuards(new RoleGuard(UserRole.USER))
+  @ApiCustomResponse(PostEntity)
   async remove(
     @Headers('authorization') token: string,
     @Param('id', ParseIntPipe) id: number
@@ -115,6 +129,7 @@ export class PostController {
   }
 
   @Get(':id/comment')
+  @ApiCustomPaginatedResponse(CommentEntity)
   async getCommentList(
     @Param('id', ParseIntPipe) id: number,
     @Query() filterCommentDto: Omit<FilterCommentDto, 'postId'>
@@ -129,12 +144,19 @@ export class PostController {
 
   @Post(':id/comment')
   @UseGuards(new RoleGuard(UserRole.USER))
+  @ApiBody({ type: OmitType(CreateCommentDto, ['postId']) })
+  @ApiCustomResponse(CommentEntity)
   async addComment(
     @Headers('authorization') token: string,
     @Param('id', ParseIntPipe) id: number,
     @Body() createCommentDto: Omit<CreateCommentDto, 'postId'>
   ): Promise<ResponseDto<CommentEntity>> {
     const post: PostEntity = await this.postService.get(id);
+
+    if (post.noComment) throw new MethodNotAllowedException({
+      data: null,
+      result: 'This post does not allow to insert comments!'
+    });
 
     return await this.commentController.add(token, {
       ...createCommentDto,
@@ -144,6 +166,7 @@ export class PostController {
 
   @Delete(':id/comment/:commentId')
   @UseGuards(new RoleGuard(UserRole.USER))
+  @ApiCustomResponse(CommentEntity)
   async removeComment(
     @Headers('authorization') token: string,
     @Param('id', ParseIntPipe) id: number,
@@ -151,5 +174,41 @@ export class PostController {
   ): Promise<ResponseDto<CommentEntity>> {
     await this.postService.get(id);
     return await this.commentController.remove(token, commentId);
+  }
+
+  @Get(':id/vote')
+  @ApiCustomPaginatedResponse(VoteEntity)
+  async getVoteList(
+    @Param('id', ParseIntPipe) id: number,
+    @Query() filterVoteDto: Omit<FilterVoteDto, 'postId'>
+  ): Promise<ResponseDto<PageOfDto<VoteEntity>>> {
+    const post: PostEntity = await this.postService.get(id);
+
+    return await this.voteController.getList({
+      ...filterVoteDto,
+      postId: post.id
+    });
+  }
+
+  @Patch(':id/vote/upVote')
+  @ApiCustomResponse(VoteEntity)
+  async upVote(
+    @Headers('authorization') token: string,
+    @Param('id', ParseIntPipe) id: number
+  ): Promise<ResponseDto<VoteEntity>> {
+    const post: PostEntity = await this.postService.get(id);
+
+    return await this.voteController.upVote(token, post.id);
+  }
+
+  @Patch(':id/vote/downVote')
+  @ApiCustomResponse(VoteEntity)
+  async downVote(
+    @Headers('authorization') token: string,
+    @Param('id', ParseIntPipe) id: number
+  ): Promise<ResponseDto<VoteEntity>> {
+    const post: PostEntity = await this.postService.get(id);
+
+    return await this.voteController.downVote(token, post.id);
   }
 }

@@ -27,14 +27,14 @@ Authorization: eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZmlyc3ROYW1lIjoi
 }
 
 ### Edit post
-PUT http://localhost:3000/api/post/3
+PUT http://localhost:3000/api/post/6
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZmlyc3ROYW1lIjoiSGVnaSIsImxhc3ROYW1lIjoiR2pva2EiLCJlbWFpbCI6Imhnam9rYTE2QGdtYWlsLmNvbSIsInJvbGUiOjcsImlhdCI6MTY1MDQ2MzI0OSwiZXhwIjoxNjUwNDY2ODQ5fQ.zePgn1LseKqcCDnNG4iZj1ULxWIe3sBSKiHZF8DNpVjdTFxnPiBPeql1yhOb_h7TGeXNqdZfalBLU2J0hIxUkQ
+Authorization: eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZmlyc3ROYW1lIjoiSGVnaSIsImxhc3ROYW1lIjoiR2pva2EiLCJlbWFpbCI6Imhnam9rYTE2QGdtYWlsLmNvbSIsInJvbGUiOjcsImlhdCI6MTY1MDQ4MDY1MCwiZXhwIjoxNjU0MDgwNjUwfQ.grA4cK85ma1Aw594_x0AKZC7xveBKZzehZJm2JzH1XrJ_YX3WyP1J0zn2VMHAkPGDuNc2MEZ-EvLMewO57Y7YQ
 
 {
   "description": "My Third Post (edited)",
   "noComment": false,
-  "id": 3
+  "id": 6
 }
 
 ### Delete post
@@ -50,8 +50,27 @@ Accept: application/json
 ### Add new comment to post
 POST http://localhost:3000/api/post/6/comment
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZmlyc3ROYW1lIjoiSGVnaSIsImxhc3ROYW1lIjoiR2pva2EiLCJlbWFpbCI6Imhnam9rYTE2QGdtYWlsLmNvbSIsInJvbGUiOjcsImlhdCI6MTY1MDQ2NzA5MiwiZXhwIjoxNjU0MDY3MDkyfQ.871eGWpfnijQrbvhjLClGPK04D3wQQVk3wOa6x0RuF-2RAPA-dXvA3yxRn7bgPAstYvdXZ2P9ZI9O_77i_csvg
+Authorization: eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZmlyc3ROYW1lIjoiSGVnaSIsImxhc3ROYW1lIjoiR2pva2EiLCJlbWFpbCI6Imhnam9rYTE2QGdtYWlsLmNvbSIsInJvbGUiOjcsImlhdCI6MTY1MDQ4MDY1MCwiZXhwIjoxNjU0MDgwNjUwfQ.grA4cK85ma1Aw594_x0AKZC7xveBKZzehZJm2JzH1XrJ_YX3WyP1J0zn2VMHAkPGDuNc2MEZ-EvLMewO57Y7YQ
 
 {
-  "comment": "sa bukur"
+  "comment": "gar"
 }
+
+### Delete comment from post
+DELETE http://localhost:3000/api/post/6/comment/10
+Accept: application/json
+Authorization: eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZmlyc3ROYW1lIjoiSGVnaSIsImxhc3ROYW1lIjoiR2pva2EiLCJlbWFpbCI6Imhnam9rYTE2QGdtYWlsLmNvbSIsInJvbGUiOjcsImlhdCI6MTY1MDUwMzUzNCwiZXhwIjoxNjU0MTAzNTM0fQ.4D90Li2yZjYyjTS9eSJYyU_7vCTV7zxiy3ISa2vwwFxQwUOV0mR7sLhpjLvcNKjEqcvmDxdhIpjW64MmfWzZiw
+
+### Get list of votes of the post
+GET http://localhost:3000/api/post/6/vote
+Accept: application/json
+
+### Up vote post
+PATCH http://localhost:3000/api/post/1/vote/upVote
+Accept: application/json
+Authorization: eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZmlyc3ROYW1lIjoiSGVnaSIsImxhc3ROYW1lIjoiR2pva2EiLCJlbWFpbCI6Imhnam9rYTE2QGdtYWlsLmNvbSIsInJvbGUiOjcsImlhdCI6MTY1MDUwMzUzNCwiZXhwIjoxNjU0MTAzNTM0fQ.4D90Li2yZjYyjTS9eSJYyU_7vCTV7zxiy3ISa2vwwFxQwUOV0mR7sLhpjLvcNKjEqcvmDxdhIpjW64MmfWzZiw
+
+### Down vote post
+PATCH http://localhost:3000/api/post/3/vote/downVote
+Accept: application/json
+Authorization: eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZmlyc3ROYW1lIjoiSGVnaSIsImxhc3ROYW1lIjoiR2pva2EiLCJlbWFpbCI6Imhnam9rYTE2QGdtYWlsLmNvbSIsInJvbGUiOjcsImlhdCI6MTY1MDUwMzUzNCwiZXhwIjoxNjU0MTAzNTM0fQ.4D90Li2yZjYyjTS9eSJYyU_7vCTV7zxiy3ISa2vwwFxQwUOV0mR7sLhpjLvcNKjEqcvmDxdhIpjW64MmfWzZiw

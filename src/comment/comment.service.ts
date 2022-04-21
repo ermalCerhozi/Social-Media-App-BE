@@ -69,6 +69,8 @@ export class CommentService {
     newComment.user = user;
     newComment.post = post;
 
+    console.log(user, newComment);
+
     try {
       await newComment.save();
     } catch (ex) {

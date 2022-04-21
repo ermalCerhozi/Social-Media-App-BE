@@ -29,15 +29,15 @@ export class PostEntity extends BaseEntity {
   @Column()
   noComment: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ type: () => [CommentEntity] })
   @OneToMany(() => CommentEntity, (comment) => comment.post, { nullable: true })
   comments: CommentEntity[];
 
-  @ApiProperty()
+  @ApiProperty({ type: () => UserEntity })
   @ManyToOne(() => UserEntity)
   user: UserEntity;
 
-  @ApiProperty()
+  @ApiProperty({ type: () => [VoteEntity] })
   @OneToMany(() => VoteEntity, (vote) => vote.post, { nullable: true })
   votes: VoteEntity[];
 }
