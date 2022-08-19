@@ -29,7 +29,8 @@
 ## Installation
 
 ```bash
-$ npm install
+npm install
+npm install mysql2 --save
 ```
 
 ## Running the app
